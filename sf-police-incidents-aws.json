@@ -1,0 +1,405 @@
+{
+   "paragraphs":[
+      {
+         "title":"Configure spark context",
+         "text":"%spark\nsc.hadoopConfiguration.set(\"fs.s3a.impl\", \"org.apache.hadoop.fs.s3a.S3AFileSystem\")\nsc.hadoopConfiguration.set(\"fs.s3a.buffer.dir\", \"/root/spark/work,/tmp\") ",
+         "user":"anonymous",
+         "dateUpdated":"2018-01-31T21:30:09+0000",
+         "config":{
+            "tableHide":false,
+            "editorSetting":{
+               "language":"scala",
+               "editOnDblClick":false
+            },
+            "colWidth":12,
+            "editorMode":"ace/mode/scala",
+            "fontSize":9,
+            "title":true,
+            "results":{
+
+            },
+            "enabled":true
+         },
+         "settings":{
+            "params":{
+
+            },
+            "forms":{
+
+            }
+         },
+         "results":{
+            "code":"SUCCESS",
+            "msg":[
+
+            ]
+         },
+         "apps":[
+
+         ],
+         "jobName":"paragraph_1517434161752_1038078081",
+         "id":"20170831-205702_465725356",
+         "dateCreated":"2018-01-31T21:29:21+0000",
+         "dateStarted":"2018-01-31T21:30:09+0000",
+         "dateFinished":"2018-01-31T21:31:04+0000",
+         "status":"FINISHED",
+         "progressUpdateIntervalMs":500,
+         "focus":true,
+         "$$hashKey":"object:2377"
+      },
+      {
+         "title":"Load the data and manipulate the data (drop invalid lines, create the DF)",
+         "text":"%spark\n\n// load the csv into a Data Frame\nval incidentsDF = spark.read\n         .format(\"csv\")\n         .option(\"header\", \"true\") //reading the headers\n         .option(\"mode\", \"DROPMALFORMED\") // drops the malformed lines\n         .load(\"s3a://lp-deps-test/data/Police_Department_Incidents.csv\")\n\n// check the number of rows\nincidentsDF.count\n",
+         "user":"anonymous",
+         "dateUpdated":"2018-01-31T21:31:08+0000",
+         "config":{
+            "tableHide":false,
+            "editorSetting":{
+               "language":"scala",
+               "editOnDblClick":false
+            },
+            "colWidth":12,
+            "editorMode":"ace/mode/scala",
+            "fontSize":9,
+            "title":true,
+            "results":{
+
+            },
+            "enabled":true
+         },
+         "settings":{
+            "params":{
+
+            },
+            "forms":{
+
+            }
+         },
+         "results":{
+            "code":"SUCCESS",
+            "msg":[
+               {
+                  "type":"TEXT",
+                  "data":"incidentsDF: org.apache.spark.sql.DataFrame = [IncidntNum: string, Category: string ... 11 more fields]\nres3: Long = 2138115\n"
+               }
+            ]
+         },
+         "runtimeInfos":{
+            "jobUrl":{
+               "propertyName":"jobUrl",
+               "label":"SPARK JOB",
+               "tooltip":"View in Spark web UI",
+               "group":"spark",
+               "values":[
+                  "http://zri-2cxx5tw2h--2d5zet4st-1517434211017-driver-svc.default.svc.cluster.local:4040/jobs/job/?id=0",
+                  "http://zri-2cxx5tw2h--2d5zet4st-1517434211017-driver-svc.default.svc.cluster.local:4040/jobs/job/?id=1"
+               ],
+               "interpreterSettingId":"2CXX5TW2H"
+            }
+         },
+         "apps":[
+
+         ],
+         "jobName":"paragraph_1517434161756_-1418827223",
+         "id":"20171108-161442_1928064495",
+         "dateCreated":"2018-01-31T21:29:21+0000",
+         "dateStarted":"2018-01-31T21:31:08+0000",
+         "dateFinished":"2018-01-31T21:32:06+0000",
+         "status":"FINISHED",
+         "progressUpdateIntervalMs":500,
+         "$$hashKey":"object:2378"
+      },
+      {
+         "title":"Set up a map for displaying results on it (leaflet.js)",
+         "text":"%angular\n\n<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.css\" />\n<div id=\"map\" style=\"height: 300px; width: 500px\"></div>\n\n<script type=\"text/javascript\">\nfunction initMap() {\n    var map = L.map('map').setView([37.00, -122.00], 3);\n\n    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {\n        attribution: 'Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors',\n        maxZoom: 12,\n        minZoom: 3\n    }).addTo(map);\n\n    var geoMarkers = L.layerGroup().addTo(map);\n    \n    var el = angular.element($('#map').parent('.ng-scope'));\n    angular.element(el).ready(function() {\n        window.locationWatcher = el.scope().compiledScope.$watch('locations', function(newValue, oldValue) {\n            geoMarkers.clearLayers(); //-- if you want to only show new data clear the layer first\n            angular.forEach(newValue, function(incident) {\n                console.log('Data: ' + incident.values[0]+'|'+ incident.values[2])\n                var marker = L.marker([ incident.values[3],incident.values[2] ])\n                  .bindPopup(incident.values[1] + \", Date: \"+incident.values[4])\n                  .addTo(geoMarkers);\n            });\n        })\n    });\n}\n\nif (window.locationWatcher) {\n    // clear existing watcher otherwise we'll have duplicates\n    window.locationWatcher();\n}\n\n// ensure we only load the script once, seems to cause issues otherwise\nif (window.L) {\n    initMap();\n} else {\n    console.log('Loading Leaflet library');\n    var sc = document.createElement('script');\n    sc.type = 'text/javascript';\n    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.js';\n    sc.onload = initMap;\n    sc.onerror = function(err) { alert(err); }\n    document.getElementsByTagName('head')[0].appendChild(sc);\n}\n</script>\n",
+         "user":"anonymous",
+         "dateUpdated":"2018-01-31T21:33:02+0000",
+         "config":{
+            "tableHide":false,
+            "editorSetting":{
+               "language":"text",
+               "editOnDblClick":true
+            },
+            "colWidth":12,
+            "editorMode":"ace/mode/undefined",
+            "editorHide":true,
+            "fontSize":9,
+            "title":true,
+            "results":{
+
+            },
+            "enabled":true
+         },
+         "settings":{
+            "params":{
+
+            },
+            "forms":{
+
+            }
+         },
+         "results":{
+            "code":"SUCCESS",
+            "msg":[
+               {
+                  "type":"ANGULAR",
+                  "data":"<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.css\" />\n<div id=\"map\" style=\"height: 300px; width: 500px\"></div>\n\n<script type=\"text/javascript\">\nfunction initMap() {\n    var map = L.map('map').setView([37.00, -122.00], 3);\n\n    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {\n        attribution: 'Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> contributors',\n        maxZoom: 12,\n        minZoom: 3\n    }).addTo(map);\n\n    var geoMarkers = L.layerGroup().addTo(map);\n    \n    var el = angular.element($('#map').parent('.ng-scope'));\n    angular.element(el).ready(function() {\n        window.locationWatcher = el.scope().compiledScope.$watch('locations', function(newValue, oldValue) {\n            geoMarkers.clearLayers(); //-- if you want to only show new data clear the layer first\n            angular.forEach(newValue, function(incident) {\n                console.log('Data: ' + incident.values[0]+'|'+ incident.values[2])\n                var marker = L.marker([ incident.values[3],incident.values[2] ])\n                  .bindPopup(incident.values[1] + \", Date: \"+incident.values[4])\n                  .addTo(geoMarkers);\n            });\n        })\n    });\n}\n\nif (window.locationWatcher) {\n    // clear existing watcher otherwise we'll have duplicates\n    window.locationWatcher();\n}\n\n// ensure we only load the script once, seems to cause issues otherwise\nif (window.L) {\n    initMap();\n} else {\n    console.log('Loading Leaflet library');\n    var sc = document.createElement('script');\n    sc.type = 'text/javascript';\n    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.js';\n    sc.onload = initMap;\n    sc.onerror = function(err) { alert(err); }\n    document.getElementsByTagName('head')[0].appendChild(sc);\n}\n</script>"
+               }
+            ]
+         },
+         "apps":[
+
+         ],
+         "jobName":"paragraph_1517434161756_-1834498421",
+         "id":"20171108-104917_2003412743",
+         "dateCreated":"2018-01-31T21:29:21+0000",
+         "dateStarted":"2018-01-31T21:33:02+0000",
+         "dateFinished":"2018-01-31T21:33:04+0000",
+         "status":"FINISHED",
+         "progressUpdateIntervalMs":500,
+         "$$hashKey":"object:2379"
+      },
+      {
+         "title":"Display the latest 100 incidents (Spark DF api)",
+         "text":"%spark\n\nvar resDF = incidentsDF.select(\"IncidntNum\", \"Category\", \"X\", \"Y\",\"Date\",\"Time\").orderBy(desc(\"Date\")).orderBy(desc(\"Time\"))\n\nz.angularBind(\"locations\", resDF.head(100)) // this is what sends the data to the frontend\n",
+         "user":"anonymous",
+         "dateUpdated":"2018-01-31T21:33:07+0000",
+         "config":{
+            "tableHide":false,
+            "editorSetting":{
+               "language":"scala",
+               "editOnDblClick":false
+            },
+            "colWidth":12,
+            "editorMode":"ace/mode/scala",
+            "fontSize":9,
+            "title":true,
+            "results":{
+               "0":{
+                  "graph":{
+                     "mode":"table",
+                     "height":438,
+                     "optionOpen":false
+                  }
+               }
+            },
+            "enabled":true
+         },
+         "settings":{
+            "params":{
+
+            },
+            "forms":{
+
+            }
+         },
+         "results":{
+            "code":"SUCCESS",
+            "msg":[
+               {
+                  "type":"TEXT",
+                  "data":"resDF: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] = [IncidntNum: string, Category: string ... 4 more fields]\n"
+               }
+            ]
+         },
+         "runtimeInfos":{
+            "jobUrl":{
+               "propertyName":"jobUrl",
+               "label":"SPARK JOB",
+               "tooltip":"View in Spark web UI",
+               "group":"spark",
+               "values":[
+                  "http://zri-2cxx5tw2h--2d5zet4st-1517434211017-driver-svc.default.svc.cluster.local:4040/jobs/job/?id=2",
+                  "http://zri-2cxx5tw2h--2d5zet4st-1517434211017-driver-svc.default.svc.cluster.local:4040/jobs/job/?id=3"
+               ],
+               "interpreterSettingId":"2CXX5TW2H"
+            }
+         },
+         "apps":[
+
+         ],
+         "jobName":"paragraph_1517434161757_-1410469322",
+         "id":"20171108-112715_119964082",
+         "dateCreated":"2018-01-31T21:29:21+0000",
+         "dateStarted":"2018-01-31T21:33:07+0000",
+         "dateFinished":"2018-01-31T21:34:10+0000",
+         "status":"FINISHED",
+         "progressUpdateIntervalMs":500,
+         "$$hashKey":"object:2380"
+      },
+      {
+         "title":"Display the first 100 incidents for a given category (Spark SQL)",
+         "text":"%spark\n\n// register the data as a temp table\nincidentsDF.registerTempTable(\"incidents\")\n\nval sqlDF = spark.sql(\"SELECT IncidntNum, Category, X, Y FROM incidents\")\nz.angularBind(\"locations\", sqlDF.head(100)) // this is what sends the data to the frontend\n\n",
+         "dateUpdated":"2018-01-31T21:29:21+0000",
+         "config":{
+            "tableHide":false,
+            "editorSetting":{
+               "language":"scala",
+               "editOnDblClick":false
+            },
+            "colWidth":12,
+            "editorMode":"ace/mode/scala",
+            "editorHide":false,
+            "fontSize":9,
+            "title":true,
+            "results":{
+               "0":{
+                  "graph":{
+                     "mode":"table",
+                     "height":438,
+                     "optionOpen":false
+                  }
+               }
+            },
+            "enabled":true
+         },
+         "settings":{
+            "params":{
+
+            },
+            "forms":{
+
+            }
+         },
+         "apps":[
+
+         ],
+         "jobName":"paragraph_1517434161758_-1729511217",
+         "id":"20171110-121044_1386039675",
+         "dateCreated":"2018-01-31T21:29:21+0000",
+         "status":"READY",
+         "errorMessage":"",
+         "progressUpdateIntervalMs":500,
+         "$$hashKey":"object:2381"
+      },
+      {
+         "text":"%sql \nselect * from incidents limit 100\n",
+         "dateUpdated":"2018-01-31T21:29:21+0000",
+         "config":{
+            "tableHide":false,
+            "editorSetting":{
+               "language":"sql",
+               "editOnDblClick":false
+            },
+            "colWidth":12,
+            "editorMode":"ace/mode/sql",
+            "fontSize":9,
+            "results":{
+               "0":{
+                  "graph":{
+                     "mode":"table",
+                     "height":300,
+                     "optionOpen":false,
+                     "setting":{
+                        "stackedAreaChart":{
+                           "style":"stream"
+                        }
+                     },
+                     "commonSetting":{
+
+                     },
+                     "keys":[
+                        {
+                           "name":"incidNum",
+                           "index":0,
+                           "aggr":"sum"
+                        }
+                     ],
+                     "groups":[
+
+                     ],
+                     "values":[
+                        {
+                           "name":"count(1)",
+                           "index":1,
+                           "aggr":"sum"
+                        }
+                     ]
+                  },
+                  "helium":{
+
+                  }
+               }
+            },
+            "enabled":true
+         },
+         "settings":{
+            "params":{
+
+            },
+            "forms":{
+
+            }
+         },
+         "apps":[
+
+         ],
+         "jobName":"paragraph_1517434161758_-260294899",
+         "id":"20170904-175301_1676233597",
+         "dateCreated":"2018-01-31T21:29:21+0000",
+         "status":"READY",
+         "errorMessage":"",
+         "progressUpdateIntervalMs":500,
+         "$$hashKey":"object:2382"
+      },
+      {
+         "text":"%sql\n",
+         "dateUpdated":"2018-01-31T21:29:21+0000",
+         "config":{
+            "tableHide":false,
+            "editorSetting":{
+               "language":"sql",
+               "editOnDblClick":false
+            },
+            "colWidth":12,
+            "editorMode":"ace/mode/sql",
+            "fontSize":9,
+            "results":{
+
+            },
+            "enabled":true
+         },
+         "settings":{
+            "params":{
+
+            },
+            "forms":{
+
+            }
+         },
+         "apps":[
+
+         ],
+         "jobName":"paragraph_1517434161758_1156459137",
+         "id":"20171107-170825_82319106",
+         "dateCreated":"2018-01-31T21:29:21+0000",
+         "status":"READY",
+         "errorMessage":"",
+         "progressUpdateIntervalMs":500,
+         "$$hashKey":"object:2383"
+      }
+   ],
+   "name":"sf-police-incidents",
+   "id":"2D5ZET4ST",
+   "noteParams":{
+
+   },
+   "noteForms":{
+
+   },
+   "angularObjects":{
+      "2CXX5TW2H::2D5ZET4ST":[
+
+      ],
+      "2CYVXG82Y:shared_process":[
+
+      ]
+   },
+   "config":{
+      "looknfeel":"default",
+      "personalizedMode":"false"
+   },
+   "info":{
+
+   }
+}
