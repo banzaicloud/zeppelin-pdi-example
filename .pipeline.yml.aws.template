@@ -1,16 +1,21 @@
 pipeline:
   create_cluster:
-    image: banzaicloud/plugin-pipeline-client:latest
-# AWS
-    cluster_name: "zepp-pdi-01"
+    image: banzaicloud/plugin-pipeline-client:0.2.0
+    cluster_name: "zepp-pdi-test-01"
     cluster_provider: amazon
+    amazon_node_instance_type: m4.xlarge
+    amazon_node_spot_price: 0.3
+    amazon_node_min_count: 2
+    amazon_node_max_count: 3
 
-# Please set up these secrets on the CI/CD ui
     secrets: [ plugin_endpoint, plugin_username, plugin_password ]
 
+  install_monitoring:
+    image: banzaicloud/plugin-pipeline-client:0.2.0
     deployment_name: "banzaicloud-stable/pipeline-cluster-monitor"
     deployment_release_name: "monitor"
-    deployment_state: "created"
+
+    secrets: [plugin_endpoint, plugin_username, plugin_password]
 
   install_spark_history_server:
     image: banzaicloud/plugin-pipeline-client:0.2.0
@@ -23,7 +28,8 @@ pipeline:
     secrets: [ plugin_endpoint, plugin_username, plugin_password ]
 
   install_zeppelin:
-    deployment_name: "zeppelin-spark"
+    image: banzaicloud/plugin-pipeline-client:0.2.0
+    deployment_name: "banzaicloud-stable/zeppelin-spark"
     deployment_release_name: "release-1"
     deployment_state: "created"
     deployment_values:
@@ -34,11 +40,11 @@ pipeline:
     secrets: [ plugin_endpoint, plugin_username, plugin_password ]
 
   remote_checkout:
-    image: banzaicloud/k8s-proxy:0.2.0
+    image: banzaicloud/plugin-k8s-proxy:0.2.0
     original_image: plugins/git
 
   run:
-    image: banzaicloud/k8s-proxy:0.2.0
+    image: banzaicloud/plugin-k8s-proxy:0.2.0
     original_image: banzaicloud/zeppelin-client:0.2.0
     notebook_name: "sf-police-incidents"
     notebook_file_path: "sf-police-incidents-aws.json"

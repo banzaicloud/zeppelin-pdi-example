@@ -31,17 +31,37 @@ The templates are similar as they are made up of the same ```steps``` only diffe
 
 * An instance of the Banzai Cloud Control Plane needs to be running and accessible
 * The following resources are needed on the Azure cloud:
- a `Storage Account`, a `Blob Service` and a folder for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In our example we named these to *spark-k8-logs* and *eventLog* respectively, replace these with your appropriate values. Also take note of your access key for the `Storage Account`, you will have to set provide these to the `steps` as `secrets`).
+ a resource group in one of the locations, a `Storage Account` and a `Blob Service` and a folder for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In our example we named these to *spark-k8-logs* and *eventLog* respectively, replace these with your appropriate values. Also take note of your access key for the `Storage Account`, you will have to set provide these to the `steps` as `secrets`).
 * The data needs to be downloaded from the above mentioned location (our smaller data set is also available [here](https://s3.amazonaws.com/lp-deps-test/data/Police_Department_Incidents.csv)) and uploaded to WASB. Please create a separate `Blob Service` for this.
 In our example notebook ```.pipeline.yml.azure.template``` we named this to *pdidata* and our storage account to *sparklogstore*, replace these with yours if you are using different names.
 
 ## Configurations required to hook in into the [Banzai Pipeline](https://github.com/banzaicloud/pipeline) CI/CD workflow
 
-In order for a project to be part of a Banzai Pipeline CI/CD workflow it must contain a specific configuration file: ```.pipeline.yml``` in its root folder.
+In order for a project to be part of a Banzai Pipeline CI/CD workflow it must contain a specific configuration file: ```.pipeline.yml``` in it's root folder.
 
 > In short: the configuration file contains the steps the project needs to go through the workflow from provisioning the environment, building the code, running tests to being deployed and executed along with project specific variables (eg.:credentials, program arguments, etc needed to assemble the deployment). We reference this file as the CI/CD flow descriptor
 
 Depending on the chosen cloud provider, rename one of the templates to [.pipeline.yml](.pipeline.yml).
+Update the below properties, depending on cloud type.
+
+### Amazon
+
+Replace s3 bucket name and folder name with yours:
+
+- pipeline.install_spark_history_server.deployment_values.app.``logDirectory``
+- pipeline.install_zeppelin.deployment_values.zeppelin.sparkSubmitOptions.``eventLogDirectory``
+
+### Azure
+
+Replace resource group name with yours:
+
+- pipeline.create_cluster.``azure_resource_group``
+
+Replace Blob container name and folder name with yours:
+
+- pipeline.install_spark_history_server.deployment_values.app.``logDirectory``
+- pipeline.install_zeppelin.deployment_values.zeppelin.sparkSubmitOptions.``eventLogDirectory``
+
 
 ## The following secrets need to be set on the CI user interface
 
@@ -77,7 +97,6 @@ These credentials are needed for Azure Blob Storage access.
 > _zeppelin-pdi-example/my-notebook.json_
 
 > - change the configuration file to point to it (see the marked lines below)
-
 
 ```yml
 run:

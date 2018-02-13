@@ -1,17 +1,26 @@
 pipeline:
   create_cluster:
     image: banzaicloud/plugin-pipeline-client:latest
-# AWS
-    cluster_name: "zepp-pdi-01"
-    cluster_provider: azure
-    azure_resource_group: "testrg"
+    pull: true
 
-# Please set up these secrets on the CI/CD ui
-    secrets: [ plugin_endpoint, plugin_username, plugin_password ]
+    cluster_name: "zepppditest01"
+    cluster_provider: "azure"
+    cluster_location: "eastus"
+    azure_resource_group: "rg_eastcoast"
+    azure_node_count: 2
 
+    secrets: [plugin_endpoint, plugin_username, plugin_password]
+
+  install_monitoring:
+    image: banzaicloud/plugin-pipeline-client:0.2.0
     deployment_name: "banzaicloud-stable/pipeline-cluster-monitor"
     deployment_release_name: "monitor"
-    deployment_state: "created"
+    deployment_values:
+      prometheus:
+        nodeExporter:
+          enabled: true
+
+    secrets: [plugin_endpoint, plugin_username, plugin_password]
 
   install_spark_history_server:
     image: banzaicloud/plugin-pipeline-client:0.2.0
@@ -27,7 +36,8 @@ pipeline:
     secrets: [plugin_endpoint, plugin_username, plugin_password, azure_storage_account, azure_storage_account_access_key]
 
   install_zeppelin:
-    deployment_name: "zeppelin-spark"
+    image: banzaicloud/plugin-pipeline-client:0.2.0
+    deployment_name: "banzaicloud-stable/zeppelin-spark"
     deployment_release_name: "release-1"
     deployment_state: "created"
     deployment_values:
@@ -40,15 +50,15 @@ pipeline:
     secrets: [plugin_endpoint, plugin_username, plugin_password, azure_storage_account, azure_storage_account_access_key]
 
   remote_checkout:
-    image: banzaicloud/k8s-proxy:0.2.0
+    image: banzaicloud/plugin-k8s-proxy:0.2.0
     original_image: plugins/git
 
   run:
-    image: banzaicloud/k8s-proxy:0.2.0
+    image: banzaicloud/plugin-k8s-proxy:0.2.0
     original_image: banzaicloud/zeppelin-client:0.2.0
     notebook_name: "sf-police-incidents"
     notebook_file_path: "sf-police-incidents-azure.json"
     notebook_state: "running"
     endpoint: "http://release-1-zeppelin:8080/zeppelin"
 
-    secrets: [ plugin_zeppelin_username, plugin_zeppelin_password ]
+    secrets: [plugin_zeppelin_username, plugin_zeppelin_password]
