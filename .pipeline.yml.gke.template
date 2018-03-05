@@ -1,0 +1,53 @@
+pipeline:
+  create_cluster:
+    image: banzaicloud/plugin-pipeline-client:latest
+    cluster_name: "zepp-pdi-test"
+    cluster_provider: "google"
+    google_project: {GOOGLE_PROJECT_ID}
+    google_gke_version: "1.8.7-gke.1"
+    google_node_count: "2"
+
+    secrets: [ plugin_endpoint, plugin_username, plugin_password ]
+
+  install_monitoring:
+    image: banzaicloud/plugin-pipeline-client:latest
+    deployment_name: "banzaicloud-stable/pipeline-cluster-monitor"
+    deployment_release_name: "monitor"
+
+    secrets: [plugin_endpoint, plugin_username, plugin_password]
+
+  install_spark_history_server:
+    image: banzaicloud/plugin-pipeline-client:latest
+
+    deployment_name: "banzaicloud-stable/spark-hs"
+    deployment_release_name: "spark-hs"
+    deployment_values:
+      app:
+          logDirectory: "gs://spark-k8-logs/eventLog"
+    secrets: [ plugin_endpoint, plugin_username, plugin_password ]
+
+  install_zeppelin:
+    image: banzaicloud/plugin-pipeline-client:latest
+    deployment_name: "banzaicloud-stable/zeppelin-spark"
+    deployment_release_name: "release-1"
+    deployment_state: "created"
+    deployment_values:
+      zeppelin:
+        sparkSubmitOptions:
+            eventLogDirectory: "gs://spark-k8-logs/eventLog"
+
+    secrets: [ plugin_endpoint, plugin_username, plugin_password ]
+
+  remote_checkout:
+    image: banzaicloud/drone-plugin-k8s-client:latest
+    original_image: plugins/git
+
+  run:
+    image: banzaicloud/drone-plugin-k8s-client:latest
+    original_image: banzaicloud/zeppelin-client:latest
+    notebook_name: "sf-police-incidents"
+    notebook_file_path: "sf-police-incidents-gke.json"
+    notebook_state: "running"
+    endpoint: "http://release-1-zeppelin:8080/zeppelin"
+
+    secrets: [ plugin_zeppelin_username, plugin_zeppelin_password ]
