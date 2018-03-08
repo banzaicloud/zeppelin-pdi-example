@@ -1,30 +1,21 @@
 pipeline:
   create_cluster:
     image: banzaicloud/plugin-pipeline-client:latest
-    cluster_name: "zepp-pdi-test"
+    cluster_name: "[[your-gke-cluster-name]]"
     cluster_provider: "google"
-    google_project: {GOOGLE_PROJECT_ID}
+    google_project: "[[your-gke-project-id]]"
     google_gke_version: "1.8.7-gke.1"
     google_node_count: "2"
+    google_service_account: "[[service-account-id]]"
 
-    secrets: [ plugin_endpoint, plugin_username, plugin_password ]
+    secrets: [plugin_endpoint, plugin_token]
 
   install_monitoring:
     image: banzaicloud/plugin-pipeline-client:latest
     deployment_name: "banzaicloud-stable/pipeline-cluster-monitor"
     deployment_release_name: "monitor"
 
-    secrets: [plugin_endpoint, plugin_username, plugin_password]
-
-  install_spark_history_server:
-    image: banzaicloud/plugin-pipeline-client:latest
-
-    deployment_name: "banzaicloud-stable/spark-hs"
-    deployment_release_name: "spark-hs"
-    deployment_values:
-      app:
-          logDirectory: "gs://spark-k8-logs/eventLog"
-    secrets: [ plugin_endpoint, plugin_username, plugin_password ]
+    secrets: [plugin_endpoint, plugin_token]
 
   install_zeppelin:
     image: banzaicloud/plugin-pipeline-client:latest
@@ -34,9 +25,14 @@ pipeline:
     deployment_values:
       zeppelin:
         sparkSubmitOptions:
-            eventLogDirectory: "gs://spark-k8-logs/eventLog"
-
-    secrets: [ plugin_endpoint, plugin_username, plugin_password ]
+          eventLogDirectory: "gs://spark-k8-logs/eventLog"
+      historyServer:
+        enabled: true
+      spark:
+        spark-hs:
+          app:
+            logDirectory: "gs://spark-k8-logs/eventLog"
+    secrets: [plugin_endpoint, plugin_token]
 
   remote_checkout:
     image: banzaicloud/drone-plugin-k8s-client:latest
@@ -48,6 +44,4 @@ pipeline:
     notebook_name: "sf-police-incidents"
     notebook_file_path: "sf-police-incidents-gke.json"
     notebook_state: "running"
-    endpoint: "http://release-1-zeppelin:8080/zeppelin"
-
-    secrets: [ plugin_zeppelin_username, plugin_zeppelin_password ]
+    zeppelin_endpoint: "http://release-1-zeppelin:8080/zeppelin"

@@ -1,54 +1,47 @@
 pipeline:
   create_cluster:
-    image: banzaicloud/plugin-pipeline-client:0.2.0
-    cluster_name: "zepp-pdi-test-01"
+    image: banzaicloud/plugin-pipeline-client:latest
+    cluster_name: "[[your-cluster-name]]"
     cluster_provider: amazon
     amazon_node_instance_type: m4.xlarge
     amazon_node_spot_price: 0.3
     amazon_node_min_count: 2
     amazon_node_max_count: 3
 
-    secrets: [ plugin_endpoint, plugin_username, plugin_password ]
+    secrets: [ plugin_endpoint, plugin_token ]
 
   install_monitoring:
-    image: banzaicloud/plugin-pipeline-client:0.2.0
+    image: banzaicloud/plugin-pipeline-client:latest
     deployment_name: "banzaicloud-stable/pipeline-cluster-monitor"
     deployment_release_name: "monitor"
 
-    secrets: [plugin_endpoint, plugin_username, plugin_password]
-
-  install_spark_history_server:
-    image: banzaicloud/plugin-pipeline-client:0.2.0
-
-    deployment_name: "banzaicloud-stable/spark-hs"
-    deployment_release_name: "spark-hs"
-    deployment_values:
-      app:
-          logDirectory: "s3a://spark-k8-logs/eventLog"
-    secrets: [ plugin_endpoint, plugin_username, plugin_password ]
+    secrets: [plugin_endpoint, plugin_token]
 
   install_zeppelin:
-    image: banzaicloud/plugin-pipeline-client:0.2.0
+    image: banzaicloud/plugin-pipeline-client:latest
     deployment_name: "banzaicloud-stable/zeppelin-spark"
     deployment_release_name: "release-1"
     deployment_state: "created"
     deployment_values:
       zeppelin:
         sparkSubmitOptions:
-            eventLogDirectory: "s3a://spark-k8-logs/eventLog"
-
-    secrets: [ plugin_endpoint, plugin_username, plugin_password ]
+          eventLogDirectory: "s3a://spark-k8-logs/eventLog"
+      historyServer:
+        enabled: true
+      spark:
+        spark-hs:
+          app:
+            logDirectory: "s3a://spark-k8-logs/eventLog"
+    secrets: [plugin_endpoint, plugin_token]
 
   remote_checkout:
-    image: banzaicloud/plugin-k8s-proxy:0.2.0
+    image: banzaicloud/drone-plugin-k8s-client:latest
     original_image: plugins/git
 
   run:
-    image: banzaicloud/plugin-k8s-proxy:0.2.0
-    original_image: banzaicloud/zeppelin-client:0.2.0
+    image: banzaicloud/drone-plugin-k8s-client:latest
+    original_image: banzaicloud/zeppelin-client:latest
     notebook_name: "sf-police-incidents"
     notebook_file_path: "sf-police-incidents-aws.json"
     notebook_state: "running"
-    endpoint: "http://release-1-zeppelin:8080/zeppelin"
-
-    secrets: [ plugin_zeppelin_username, plugin_zeppelin_password ]
+    zeppelin_endpoint: "http://release-1-zeppelin:8080/zeppelin"
