@@ -5,8 +5,8 @@ pipeline:
 
     cluster_name: "[[your-cluster-name]]"
     cluster_provider: "azure"
-    cluster_location: "eastus"
-    azure_resource_group: "rg_eastcoast"
+    cluster_location: "[[your-azure-cluster-location]]"
+    azure_resource_group: "[[your-azure-resource-group]]"
     azure_node_count: 2
 
     secrets: [plugin_endpoint, plugin_token]
@@ -15,11 +15,7 @@ pipeline:
     image: banzaicloud/plugin-pipeline-client:latest
     deployment_name: "banzaicloud-stable/pipeline-cluster-monitor"
     deployment_release_name: "monitor"
-    deployment_values:
-      prometheus:
-        nodeExporter:
-          enabled: true
-
+    
     secrets: [plugin_endpoint, plugin_token]
 
   install_zeppelin:
@@ -30,7 +26,7 @@ pipeline:
     deployment_values:
       zeppelin:
         sparkSubmitOptions:
-          eventLogDirectory: "wasb://spark-k8-logs@{{ .AZURE_STORAGE_ACCOUNT }}.blob.core.windows.net/eventLog"
+          eventLogDirectory: "wasb://[[your-blob-container]]@{{ .AZURE_STORAGE_ACCOUNT }}.blob.core.windows.net/"
           azureStorageAccountName: "{{ .AZURE_STORAGE_ACCOUNT }}"
           azureStorageAccessKey: "{{ .AZURE_STORAGE_ACCOUNT_ACCESS_KEY }}"
       historyServer:
@@ -38,20 +34,20 @@ pipeline:
       spark:
         spark-hs:
           app:
-            logDirectory: "wasb://spark-k8-logs@{{ .AZURE_STORAGE_ACCOUNT }}.blob.core.windows.net/eventLog"
+            logDirectory: "wasb://[[your-blob-container]]@{{ .AZURE_STORAGE_ACCOUNT }}.blob.core.windows.net/"
             azureStorageAccountName: "{{ .AZURE_STORAGE_ACCOUNT }}"
             azureStorageAccessKey: "{{ .AZURE_STORAGE_ACCOUNT_ACCESS_KEY }}"
 
     secrets: [plugin_endpoint, plugin_token, azure_storage_account, azure_storage_account_access_key]
 
-    remote_checkout:
-      image: banzaicloud/drone-plugin-k8s-client:latest
-      original_image: plugins/git
+  remote_checkout:
+    image: banzaicloud/drone-plugin-k8s-client:latest
+    original_image: plugins/git
 
-    run:
-      image: banzaicloud/drone-plugin-k8s-client:latest
-      original_image: banzaicloud/zeppelin-client:latest
-      notebook_name: "sf-police-incidents"
-      notebook_file_path: "sf-police-incidents-azure.json"
-      notebook_state: "running"
-      zeppelin_endpoint: "http://release-1-zeppelin:8080/zeppelin"
+  run:
+    image: banzaicloud/drone-plugin-k8s-client:latest
+    original_image: banzaicloud/zeppelin-client:latest
+    notebook_name: "sf-police-incidents"
+    notebook_file_path: "sf-police-incidents-azure.json"
+    notebook_state: "running"
+    zeppelin_endpoint: "http://release-1-zeppelin:8080/zeppelin"
