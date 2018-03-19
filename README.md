@@ -40,7 +40,7 @@ In our example notebook ```.pipeline.yml.azure.template``` we named this to *pdi
 
 * An instance of the Banzai Cloud Control Plane needs to be running and accessible
 * The following resources are needed on Google Cloud:
- a `Project`, a `Service Account` and a `Storage bucket` and a folder for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In the example we named this to [[your-blob-container]] respectively).
+ a `Project`, a `Service Account` and a `Storage bucket` and a folder for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In the example we named this to [[your-gs-bucket]] respectively).
 * The data needs to be downloaded from the above mentioned location (our smaller data set is also available [here](https://s3.amazonaws.com/lp-deps-test/data/Police_Department_Incidents.csv)) and uploaded to Google Storage. Please create a separate `Storage Bucket` for this.
 In our example notebook ```.pipeline.yml.gke.template``` we named this to *pdidata*, replace this with yours if you are using different names.
 

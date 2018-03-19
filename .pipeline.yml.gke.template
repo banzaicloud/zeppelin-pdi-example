@@ -25,13 +25,13 @@ pipeline:
     deployment_values:
       zeppelin:
         sparkSubmitOptions:
-          eventLogDirectory: "gs://[[your-blob-container]]/"
+          eventLogDirectory: "gs://[[your-gs-bucket]]/"
       historyServer:
         enabled: true
       spark:
         spark-hs:
           app:
-            logDirectory: "gs://[[your-blob-container]]/"
+            logDirectory: "gs://[[your-gs-bucket]]/"
     secrets: [plugin_endpoint, plugin_token]
 
   remote_checkout:
