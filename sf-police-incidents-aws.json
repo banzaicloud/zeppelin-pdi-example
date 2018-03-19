@@ -49,7 +49,7 @@
       },
       {
          "title":"Load the data and manipulate the data (drop invalid lines, create the DF)",
-         "text":"%spark\n\n// load the csv into a Data Frame\nval incidentsDF = spark.read\n         .format(\"csv\")\n         .option(\"header\", \"true\") //reading the headers\n         .option(\"mode\", \"DROPMALFORMED\") // drops the malformed lines\n         .load(\"s3a://lp-deps-test/data/Police_Department_Incidents.csv\")\n\n// check the number of rows\nincidentsDF.count\n",
+         "text":"%spark\n\n// load the csv into a Data Frame\nval incidentsDF = spark.read\n         .format(\"csv\")\n         .option(\"header\", \"true\") //reading the headers\n         .option(\"mode\", \"DROPMALFORMED\") // drops the malformed lines\n         .load(\"s3a://[[your-bucket-name]]/Police_Department_Incidents.csv\")\n\n// check the number of rows\nincidentsDF.count\n",
          "user":"anonymous",
          "dateUpdated":"2018-01-31T21:31:08+0000",
          "config":{

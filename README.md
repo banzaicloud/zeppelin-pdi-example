@@ -25,14 +25,14 @@ The templates are similar as they are made up of the same ```steps``` only diffe
 ## Prerequisites for Amazon
 
 * An instance of the Banzai Cloud Control Plane needs to be running and accessible
-* Create an S3 bucket and a folder for persisting Spark event logs, so that they can be accessed by the Spark History Server. (In our example we named these to *spark-k8-logs* and *eventLog*, replace these with your appropriate values)
+* Create an S3 bucket and a folder for persisting Spark event logs, so that they can be accessed by the Spark History Server. (In the example replace [[your-s3-bucket/your-log-folder]] with your appropriate values)
 * The example dataset should be available for the cluster; it needs to be downloaded from the above mentioned location and uploaded to your s3 bucket
 
 ## Prerequisites for Azure
 
 * An instance of the Banzai Cloud Control Plane needs to be running and accessible
 * The following resources are needed on the Azure cloud:
- a resource group in one of the locations, a `Storage Account` and a `Blob Service` and a folder for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In our example we named these to *spark-k8-logs* and *eventLog* respectively, replace these with your appropriate values. Also take note of your access key for the `Storage Account`, you will have to set provide these to the `steps` as `secrets`).
+ a resource group in one of the locations, a `Storage Account` and a `Blob Service` and a folder for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In the example replace [[your-blob-container]] with your appropriate values. Also take note of your access key for the `Storage Account`, you will have to set provide these to the `steps` as `secrets`).
 * The data needs to be downloaded from the above mentioned location (our smaller data set is also available [here](https://s3.amazonaws.com/lp-deps-test/data/Police_Department_Incidents.csv)) and uploaded to WASB. Please create a separate `Blob Service` for this.
 In our example notebook ```.pipeline.yml.azure.template``` we named this to *pdidata* and our storage account to *sparklogstore*, replace these with yours if you are using different names.
 
@@ -40,7 +40,7 @@ In our example notebook ```.pipeline.yml.azure.template``` we named this to *pdi
 
 * An instance of the Banzai Cloud Control Plane needs to be running and accessible
 * The following resources are needed on Google Cloud:
- a `Project`, a `Service Account` and a `Storage bucket` and a folder for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In our example we named these to *spark-k8-logs* and *eventLog* respectively).
+ a `Project`, a `Service Account` and a `Storage bucket` and a folder for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In the example we named this to [[your-blob-container]] respectively).
 * The data needs to be downloaded from the above mentioned location (our smaller data set is also available [here](https://s3.amazonaws.com/lp-deps-test/data/Police_Department_Incidents.csv)) and uploaded to Google Storage. Please create a separate `Storage Bucket` for this.
 In our example notebook ```.pipeline.yml.gke.template``` we named this to *pdidata*, replace this with yours if you are using different names.
 
@@ -122,7 +122,7 @@ These credentials are needed for Azure Blob Storage access.
 run:
   ....
   zeppelin_notebook_name: "my-notebook.json" # <---- change this
-  zeppelin_notebook_file_path: "my-notebook.json" #<---- change this
+  zeppelin_notebook_file_path: "my-notebook.json" # <---- change this
   ....
 ```
 

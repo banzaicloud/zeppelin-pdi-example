@@ -1,6 +1,6 @@
 pipeline:
   create_cluster:
-    image: banzaicloud/plugin-pipeline-client:latest
+    image: banzaicloud/plugin-pipeline-client:0.3.0
     cluster_name: "[[your-cluster-name]]"
     cluster_provider: amazon
     amazon_node_instance_type: m4.xlarge
@@ -11,14 +11,14 @@ pipeline:
     secrets: [ plugin_endpoint, plugin_token ]
 
   install_monitoring:
-    image: banzaicloud/plugin-pipeline-client:latest
+    image: banzaicloud/plugin-pipeline-client:0.3.0
     deployment_name: "banzaicloud-stable/pipeline-cluster-monitor"
     deployment_release_name: "monitor"
 
     secrets: [plugin_endpoint, plugin_token]
 
   install_zeppelin:
-    image: banzaicloud/plugin-pipeline-client:latest
+    image: banzaicloud/plugin-pipeline-client:0.3.0
     deployment_name: "banzaicloud-stable/zeppelin-spark"
     deployment_release_name: "release-1"
     deployment_state: "created"
@@ -35,12 +35,12 @@ pipeline:
     secrets: [plugin_endpoint, plugin_token]
 
   remote_checkout:
-    image: banzaicloud/drone-plugin-k8s-client:latest
+    image: banzaicloud/drone-plugin-k8s-client:0.3.0
     original_image: plugins/git
 
   run:
-    image: banzaicloud/drone-plugin-k8s-client:latest
-    original_image: banzaicloud/zeppelin-client:latest
+    image: banzaicloud/drone-plugin-k8s-client:0.3.0
+    original_image: banzaicloud/zeppelin-client:0.3.0
     notebook_name: "sf-police-incidents"
     notebook_file_path: "sf-police-incidents-aws.json"
     notebook_state: "running"
