@@ -41,11 +41,11 @@ pipeline:
     secrets: [plugin_endpoint, plugin_token, azure_storage_account, azure_storage_account_access_key]
 
   remote_checkout:
-    image: banzaicloud/drone-plugin-k8s-client:0.3.0
+    image: banzaicloud/plugin-k8s-proxy:0.3.0
     original_image: plugins/git
 
   run:
-    image: banzaicloud/drone-plugin-k8s-client:0.3.0
+    image: banzaicloud/plugin-k8s-proxy:0.3.0
     original_image: banzaicloud/zeppelin-client:0.3.0
     notebook_name: "sf-police-incidents"
     notebook_file_path: "sf-police-incidents-azure.json"

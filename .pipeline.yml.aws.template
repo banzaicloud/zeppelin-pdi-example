@@ -35,11 +35,11 @@ pipeline:
     secrets: [plugin_endpoint, plugin_token]
 
   remote_checkout:
-    image: banzaicloud/drone-plugin-k8s-client:0.3.0
+    image: banzaicloud/plugin-k8s-proxy:0.3.0
     original_image: plugins/git
 
   run:
-    image: banzaicloud/drone-plugin-k8s-client:0.3.0
+    image: banzaicloud/plugin-k8s-proxy:0.3.0
     original_image: banzaicloud/zeppelin-client:0.3.0
     notebook_name: "sf-police-incidents"
     notebook_file_path: "sf-police-incidents-aws.json"
