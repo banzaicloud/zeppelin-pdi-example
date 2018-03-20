@@ -26,19 +26,19 @@ pipeline:
     deployment_values:
       zeppelin:
         sparkSubmitOptions:
-          eventLogDirectory: "wasb://[[your-blob-container]]@{{ .AZURE_STORAGE_ACCOUNT }}.blob.core.windows.net/"
-          azureStorageAccountName: "{{ .AZURE_STORAGE_ACCOUNT }}"
-          azureStorageAccessKey: "{{ .AZURE_STORAGE_ACCOUNT_ACCESS_KEY }}"
+          eventLogDirectory: "wasb://[[your-blob-container]]@{{ .PLUGIN_AZURE_STORAGE_ACCOUNT }}.blob.core.windows.net/"
+          azureStorageAccountName: "{{ .PLUGIN_AZURE_STORAGE_ACCOUNT }}"
+          azureStorageAccessKey: "{{ .PLUGIN_AZURE_STORAGE_ACCOUNT_ACCESS_KEY }}"
       historyServer:
         enabled: true
       spark:
         spark-hs:
           app:
             logDirectory: "wasb://[[your-blob-container]]@{{ .AZURE_STORAGE_ACCOUNT }}.blob.core.windows.net/"
-            azureStorageAccountName: "{{ .AZURE_STORAGE_ACCOUNT }}"
-            azureStorageAccessKey: "{{ .AZURE_STORAGE_ACCOUNT_ACCESS_KEY }}"
+            azureStorageAccountName: "{{ .PLUGIN_AZURE_STORAGE_ACCOUNT }}"
+            azureStorageAccessKey: "{{ .PLUGIN_AZURE_STORAGE_ACCOUNT_ACCESS_KEY }}"
 
-    secrets: [plugin_endpoint, plugin_token, azure_storage_account, azure_storage_account_access_key]
+    secrets: [plugin_endpoint, plugin_token, plugin_azure_storage_account, plugin_azure_storage_account_access_key]
 
   remote_checkout:
     image: banzaicloud/plugin-k8s-proxy:0.3.0
