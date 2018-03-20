@@ -34,7 +34,7 @@ pipeline:
       spark:
         spark-hs:
           app:
-            logDirectory: "wasb://[[your-blob-container]]@{{ .AZURE_STORAGE_ACCOUNT }}.blob.core.windows.net/"
+            logDirectory: "wasb://[[your-blob-container]]@{{ .PLUGIN_AZURE_STORAGE_ACCOUNT }}.blob.core.windows.net/"
             azureStorageAccountName: "{{ .PLUGIN_AZURE_STORAGE_ACCOUNT }}"
             azureStorageAccessKey: "{{ .PLUGIN_AZURE_STORAGE_ACCOUNT_ACCESS_KEY }}"
 

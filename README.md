@@ -26,15 +26,14 @@ The templates are similar as they are made up of the same ```steps``` only diffe
 
 * An instance of the Banzai Cloud Control Plane needs to be running and accessible
 * Create an S3 bucket and a folder for persisting Spark event logs, so that they can be accessed by the Spark History Server. (In the example replace [[your-s3-bucket/your-log-folder]] with your appropriate values)
-* The example dataset should be available for the cluster; it needs to be downloaded from the above mentioned location and uploaded to your s3 bucket
+* The example dataset should be available for the cluster; it needs to be downloaded from the above mentioned location and uploaded to your s3 bucket, then update our example notebook ```sf-police-incidents-aws.json``` replacing [[your-bucket-name]].
 
 ## Prerequisites for Azure
 
 * An instance of the Banzai Cloud Control Plane needs to be running and accessible
 * The following resources are needed on the Azure cloud:
- a resource group in one of the locations, a `Storage Account` and a `Blob Service` and a folder for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In the example replace [[your-blob-container]] with your appropriate values. Also take note of your access key for the `Storage Account`, you will have to set provide these to the `steps` as `secrets`).
-* The data needs to be downloaded from the above mentioned location (our smaller data set is also available [here](https://s3.amazonaws.com/lp-deps-test/data/Police_Department_Incidents.csv)) and uploaded to WASB. Please create a separate `Blob Service` for this.
-In our example notebook ```.pipeline.yml.azure.template``` we named this to *pdidata* and our storage account to *sparklogstore*, replace these with yours if you are using different names.
+ a resource group in one of the locations, a `Storage Account` and a `Blob Service` for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In the example replace [[your-blob-container]] with your appropriate values. Also take note of your access key for the `Storage Account`, you will have to set provide these to the `steps` as `secrets`).
+* The data needs to be downloaded from the above mentioned location (our smaller data set is also available [here](https://s3.amazonaws.com/lp-deps-test/data/Police_Department_Incidents.csv)) and uploaded to WASB. Create a separate `Blob Service` for this in the same `Storage Account` and uploaded the data file there. Update our example notebook ```sf-police-incidents-azure.json``` replacing [[your-blob-container]], [[your-azure-storage-account]] values with yours.
 
 ## Prerequisites for Google Cloud
 
@@ -42,75 +41,55 @@ In our example notebook ```.pipeline.yml.azure.template``` we named this to *pdi
 * The following resources are needed on Google Cloud:
  a `Project`, a `Service Account` and a `Storage bucket` and a folder for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In the example we named this to [[your-gs-bucket]] respectively).
 * The data needs to be downloaded from the above mentioned location (our smaller data set is also available [here](https://s3.amazonaws.com/lp-deps-test/data/Police_Department_Incidents.csv)) and uploaded to Google Storage. Please create a separate `Storage Bucket` for this.
-In our example notebook ```.pipeline.yml.gke.template``` we named this to *pdidata*, replace this with yours if you are using different names.
+Update our example notebook ```sf-police-incidents-gke.json``` replacing [[your-gs-bucket]] value.
 
-## Configurations required to hook in into the [Banzai Pipeline](https://github.com/banzaicloud/pipeline) CI/CD workflow
+## Steps required to hook in into the [Banzai Pipeline](https://github.com/banzaicloud/pipeline) CI/CD workflow
 
 In order for a project to be part of a Banzai Pipeline CI/CD workflow it must contain a specific configuration file: ```.pipeline.yml``` in it's root folder.
 
 > In short: the configuration file contains the steps the project needs to go through the workflow from provisioning the environment, building the code, running tests to being deployed and executed along with project specific variables (eg.:credentials, program arguments, etc needed to assemble the deployment). We reference this file as the CI/CD flow descriptor
 
-Depending on the chosen cloud provider, rename one of the templates to [.pipeline.yml](.pipeline.yml).
+* depending on the chosen cloud provider, rename one of the templates to [.pipeline.yml](.pipeline.yml).
 Update the below properties, depending on cloud type.
 
-### Amazon
+  ##### Amazon
 
-Replace s3 bucket name and folder name with yours:
+  - [[your-cluster-name]]
+  - [[your-s3-bucket]]
+  - [[your-log-folder]]
 
-- pipeline.install_spark_history_server.deployment_values.app.``logDirectory``
-- pipeline.install_zeppelin.deployment_values.zeppelin.sparkSubmitOptions.``eventLogDirectory``
+  ##### Azure
 
-### Azure
+  - [[your-cluster-name]]
+  - [[your-azure-cluster-location]]
+  - [[your-azure-resource-group]]
+  - [[your-blob-container]]
 
-Replace resource group name with yours:
+  ##### Google Cloud
 
-- pipeline.create_cluster.``azure_resource_group``
-
-Replace Blob container name and folder name with yours:
-
-- pipeline.install_spark_history_server.deployment_values.app.``logDirectory``
-- pipeline.install_zeppelin.deployment_values.zeppelin.sparkSubmitOptions.``eventLogDirectory``
-
-### Google Cloud
-
-Replace project name with yours:
-
-- pipeline.create_cluster.``google_project``
-
-Replace GS bucket name and folder name with yours:
-
-- pipeline.install_spark_history_server.deployment_values.app.``logDirectory``
-- pipeline.install_zeppelin.deployment_values.zeppelin.sparkSubmitOptions.``eventLogDirectory``
+  - [[your-gke-cluster-name]]
+  - [[your-gke-project-id]]
+  - [[service-account-id]]
+  - [[your-gs-bucket]]
 
 
-## The following secrets need to be set on the CI user interface
+* navigate to the CI/CD user interface (that usually runs on the Banzai Cloud Control plane instance)
+* enable the project build from the list of available repositories
+* add the following secrets to the build:
 
-### The endpoint for the Pipeline API
+```
+PLUGIN_ENDPOINT = [control-plane]/pipeline/api/v1
+PLUGIN_TOKEN = "oauthToken"
+```
 
-    plugin_endpoint: http://<host/ip>/pipeline/api/v1
+*Credentials for Azure Blob Storage access*
 
-The pipeline runs on the Banzai Cloud Control Plane, so this value should point to the hostname/ip of the machine hosting it.
+    PLUGIN_AZURE_STORAGE_ACCOUNT = [control-plane]/pipeline/api/v1
+    PLUGIN_AZURE_STORAGE_ACCOUNT_ACCESS_KEY = "oauthToken"
 
-### Credentials for the Pipeline API
 
-    plugin_user: <admin>
-    plugin_password: <example>
+The project is configured now for the Banzai Cloud CI/CD flow. On each commit to the repository a new flow will be triggered. You can check the progress on the CI/CD user interface.
 
-These credentials specify the user of the Pipeline API.
-
-### Credentials for zeppelin
-
-    plugin_zeppelin_username
-    plugin_zeppelin_password
-
-These credentials authenticate the Zeppelin user.
-
-### Credentials for Azure Blob Storage
-
-    azure_storage_account
-    azure_storage_account_access_key
-
-These credentials are needed for Azure Blob Storage access.
 
 > If you'd like to hook in your own notebook into the Banzai Pipeline Workflow:
 > - add your notebook to the repository:
