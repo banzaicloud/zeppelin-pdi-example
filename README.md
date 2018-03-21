@@ -25,7 +25,7 @@ The templates are similar as they are made up of the same ```steps``` only diffe
 ## Prerequisites for Amazon
 
 * An instance of the Banzai Cloud Control Plane needs to be running and accessible
-* Create an S3 bucket and a folder for persisting Spark event logs, so that they can be accessed by the Spark History Server. (In the example replace [[your-s3-bucket/your-log-folder]] with your appropriate values)
+* Create an S3 bucket for persisting Spark event logs, so that they can be accessed by the Spark History Server. (In the example replace [[your-s3-bucket]] with your appropriate values)
 * The example dataset should be available for the cluster; it needs to be downloaded from the above mentioned location and uploaded to your s3 bucket, then update our example notebook ```sf-police-incidents-aws.json``` replacing [[your-bucket-name]].
 
 ## Prerequisites for Azure

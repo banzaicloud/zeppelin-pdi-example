@@ -25,13 +25,13 @@ pipeline:
     deployment_values:
       zeppelin:
         sparkSubmitOptions:
-          eventLogDirectory: "s3a://[[your-s3-bucket/your-log-folder]]"
+          eventLogDirectory: "s3a://[[your-s3-bucket]]/"
       historyServer:
         enabled: true
       spark:
         spark-hs:
           app:
-            logDirectory: "s3a://[[your-s3-bucket/your-log-folder]]"
+            logDirectory: "s3a://[[your-s3-bucket]]/"
     secrets: [plugin_endpoint, plugin_token]
 
   remote_checkout:
