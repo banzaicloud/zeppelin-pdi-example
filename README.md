@@ -25,21 +25,30 @@ The templates are similar as they are made up of the same ```steps``` only diffe
 ## Prerequisites for Amazon
 
 * An instance of the Banzai Cloud Control Plane needs to be running and accessible
-* Create an S3 bucket for persisting Spark event logs, so that they can be accessed by the Spark History Server. (In the example replace [[your-s3-bucket]] with your appropriate values)
+* Create an S3 bucket for persisting Spark event logs, so that they can be accessed by the Spark History Server. You will have to set the name of this bucket container in the example `yml` as [[your-s3-bucket]].
 * The example dataset should be available for the cluster; it needs to be downloaded from the above mentioned location and uploaded to your s3 bucket, then update our example notebook ```sf-police-incidents-aws.json``` replacing [[your-bucket-name]].
 
 ## Prerequisites for Azure
 
 * An instance of the Banzai Cloud Control Plane needs to be running and accessible
 * The following resources are needed on the Azure cloud:
- a resource group in one of the locations, a `Storage Account` and a `Blob Service` for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In the example replace [[your-blob-container]] with your appropriate values. Also take note of your access key for the `Storage Account`, you will have to set provide these to the `steps` as `secrets`).
-* The data needs to be downloaded from the above mentioned location (our smaller data set is also available [here](https://s3.amazonaws.com/lp-deps-test/data/Police_Department_Incidents.csv)) and uploaded to WASB. Create a separate `Blob Service` for this in the same `Storage Account` and uploaded the data file there. Update our example notebook ```sf-police-incidents-azure.json``` replacing [[your-blob-container]], [[your-azure-storage-account]] values with yours.
+
+    - `Resource Group` in one of the locations
+    - `Storage Account`, take note of your access key for the `Storage Account`, you will have to set [[your-storage-account-name]] and [[your-storage-account-access-key]] as `secrets` in later steps.
+    - `Blob Service` for persisting Spark event logs so that hey can be accessed by the Spark History Server. You will have to set the name of this Blob container in the example `yml` as [[your-blob-container]].
+
+
+* The data needs to be downloaded from the above mentioned location (our smaller data set is also available [here](https://s3.amazonaws.com/lp-deps-test/data/Police_Department_Incidents.csv)) and uploaded to WASB. Create a separate `Blob Service` in the same `Storage Account` created in previous step and upload the data file. Update our example notebook ```sf-police-incidents-azure.json``` replacing [[your-blob-container]], [[your-azure-storage-account]] values with yours.
 
 ## Prerequisites for Google Cloud
 
 * An instance of the Banzai Cloud Control Plane needs to be running and accessible
 * The following resources are needed on Google Cloud:
- a `Project`, a `Service Account` and a `Storage bucket` and a folder for persisting Spark event logs so that hey can be accessed by the Spark History Server. (In the example we named this to [[your-gs-bucket]] respectively).
+
+    - `Project` You'll have to enter the ID of your project as [[your-gke-project-id]] in example `yml`
+    - `Storage bucket` for persisting Spark event logs so that hey can be accessed by the Spark History Server. You will have to set the name of this bucket in the example `yml` as [[your-gs-bucket]].
+
+
 * The data needs to be downloaded from the above mentioned location (our smaller data set is also available [here](https://s3.amazonaws.com/lp-deps-test/data/Police_Department_Incidents.csv)) and uploaded to Google Storage. Please create a separate `Storage Bucket` for this.
 Update our example notebook ```sf-police-incidents-gke.json``` replacing [[your-gs-bucket]] value.
 
@@ -56,7 +65,6 @@ Update the below properties, depending on cloud type.
 
   - [[your-cluster-name]]
   - [[your-s3-bucket]]
-  - [[your-log-folder]]
 
   ##### Azure
 
@@ -69,7 +77,6 @@ Update the below properties, depending on cloud type.
 
   - [[your-gke-cluster-name]]
   - [[your-gke-project-id]]
-  - [[service-account-id]]
   - [[your-gs-bucket]]
 
 
@@ -84,8 +91,8 @@ PLUGIN_TOKEN = "oauthToken"
 
 *Credentials for Azure Blob Storage access*
 
-    PLUGIN_AZURE_STORAGE_ACCOUNT = [control-plane]/pipeline/api/v1
-    PLUGIN_AZURE_STORAGE_ACCOUNT_ACCESS_KEY = "oauthToken"
+    PLUGIN_AZURE_STORAGE_ACCOUNT = "[[your-storage-account-name]]"
+    PLUGIN_AZURE_STORAGE_ACCOUNT_ACCESS_KEY = "[[your-storage-account-access-key]]"
 
 
 The project is configured now for the Banzai Cloud CI/CD flow. On each commit to the repository a new flow will be triggered. You can check the progress on the CI/CD user interface.

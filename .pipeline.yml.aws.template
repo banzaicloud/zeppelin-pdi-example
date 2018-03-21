@@ -5,8 +5,8 @@ pipeline:
     cluster_provider: amazon
     amazon_node_instance_type: m4.xlarge
     amazon_node_spot_price: 0.3
-    amazon_node_mincount: 2
-    amazon_node_maxcount: 3
+    amazon_node_min_count: 2
+    amazon_node_max_count: 3
 
     secrets: [ plugin_endpoint, plugin_token ]
 

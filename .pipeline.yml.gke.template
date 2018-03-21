@@ -4,9 +4,7 @@ pipeline:
     cluster_name: "[[your-gke-cluster-name]]"
     cluster_provider: "google"
     google_project: "[[your-gke-project-id]]"
-    google_gke_version: "1.9.4-gke.1"
     google_node_count: "2"
-    google_service_account: "[[service-account-id]]"
 
     secrets: [plugin_endpoint, plugin_token]
 
